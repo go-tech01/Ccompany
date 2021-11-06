@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+    <form class="text-center" method="POST" action="{% url 'estimateapp:create' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="max-width: 17rem;">
+            <h3 style="text-align: center">Please enter</h3>
+            {#                                    <p>{{ form.name.label }} : <input type="text" name="name" size="10rem" style="padding: 10px"></p>#}
+            <div style="text-align: right">
+                <p>{{ form.name.label }} : <input type="text" name="name" style="width: 7rem; height: 1.5rem"></p>
+                <p>{{ form.phone_number.label }} : <input type="text" name="phone_number" style="width: 7rem; height: 1.5rem" placeholder="010-0000-0000"></p>
+                <p>{{ form.area.label }} : <input type="number" name="area" style="width: 6rem; height: 1.5rem">평</p>
+                <p>{{ form.types.label }} :
+                    <select name="types" required="" id="id_types" style="width: 7.5rem; height: 2rem">
+                        <option value="" selected="">---------</option>
+                        <option value="apt">아파트</option>
+                        <option value="house">주택</option>
+                        <option value="store">상가</option>
+                    </select>
+                </p>
+            </div>
+            <label class="image-preview spinner-postion" id="imagePreview" >
+                <div style="text-align: center">Add estimate image file</div>
+                <img src="{% static 'image/photo.png' %}"
+                     alt="Image Preview"
+                     class="image-preview__image"
+                     style="width: 100%;">
+                <p>{{ form.input_estimateimage }}</p>
+            </label>
+            <div class="card-footer bg-transparent border-success text-center" style="text-align: center">
+                <input class="btn btn-outline-success" id="btnFEtch" type="submit" value="Go!" >
+            </div>
+        </div>
+    </form>
+
+    <script>
+        const inpFile = document.getElementById("inpFile");
+        const previewContainer = document.getElementById("imagePreview");
+        const previewImage = previewContainer.querySelector(".image-preview__image");
+
+        inpFile.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader()
+                previewImage.style.display = "block";
+
+                reader.addEventListener("load", function() {
+                    previewImage.setAttribute("src", this.result);
+                });
+
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.style.display = null;
+            }
+        })
+    </script>
+
+
+{% endblock %}
+
