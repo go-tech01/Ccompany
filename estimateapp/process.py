@@ -39,27 +39,30 @@ evaluation_list = ['목공사']
 code = [i for i in range(100,3000)]       # 공사 코드 [100~2999]
 error = 15
 
+
 class Process():
     def __init__(self, input_estimateimage):
         self.input_estimateimage = input_estimateimage
-        # print(self.input_estimateimage)
-
-    def gennerate(self):
-        # input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(self.input_estimateimage)
-        # input_file = self.input_estimateimage
+    def f_gennerate(self):
+        input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(self.input_estimateimage)
+        print(input_file)
         request_json = {'images': [{'format': 'jpg',
                                     'name': 'demo'}],
                         'requestId': str(uuid.uuid4()),
                         'version': 'V1',
                         'timestamp': int(round(time.time() * 1000))}
         payload = {'message': json.dumps(request_json).encode('UTF-8')}
-        # files = [('file', open(input_file, 'rb'))]
-        files = [('file', self.input_estimateimage)]
-        print("gennerate : ", files[0][1])
-        print(type(files[0][1]))
+        files = [('file', open(input_file, 'rb'))]
+        # files = [('file', self.input_estimateimage)]
+        # print("gennerate : ", files[0][1])
+        # print(type(files[0][1]))
         headers = {'X-OCR-SECRET': secret_key}
         response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
         res = json.loads(response.text.encode('utf8'))
+        return res
+
+    def gennerate(self):
+        res = self.f_gennerate()
         res_images = res['images']
         print(res_images)
         res_fields = res_images[0]['fields']
