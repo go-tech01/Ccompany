@@ -14,7 +14,6 @@ class EstimateModel(models.Model):
     types = models.CharField(max_length=50, choices=TYPES)
     input_estimateimage = models.ImageField(upload_to='input_estimate', null=False)
 
-
 class Output(models.Model):
     list_11 = models.CharField(max_length=500)
     list_22 = JSONField()
