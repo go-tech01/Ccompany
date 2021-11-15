@@ -43,7 +43,8 @@ error = 15
 class Process():
     def __init__(self, input_estimateimage):
         self.input_estimateimage = input_estimateimage
-    def f_gennerate(self):
+
+    def gennerate(self):
         input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(self.input_estimateimage)
         print(input_file)
         request_json = {'images': [{'format': 'jpg',
@@ -59,10 +60,6 @@ class Process():
         headers = {'X-OCR-SECRET': secret_key}
         response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
         res = json.loads(response.text.encode('utf8'))
-        return res
-
-    def gennerate(self):
-        res = self.f_gennerate()
         res_images = res['images']
         print(res_images)
         res_fields = res_images[0]['fields']
