@@ -40,19 +40,19 @@ error = 15
 # 공사 대분류 - 소분류
 toilet_constructions = ['욕실공사', '도기공사', '수전공사', '조적공사', '타일공사']
 class Process():
-    def __init__(self, input_estimateimage):
-    # def __init__(self, input_estimateimage, area):
-        # self.area = area
-        global final_construction_dict, final_detail_dict, final_df
-        # input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
+    # def __init__(self, input_estimateimage):
+    def __init__(self, input_estimateimage, area):
+        self.area = area
+        global final_construction_dict, final_detail_dict, final_df, del_list
+        input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
         request_json = {'images': [{'format': 'jpg',
                                     'name': 'demo'}],
                         'requestId': str(uuid.uuid4()),
                         'version': 'V1',
                         'timestamp': int(round(time.time() * 1000))}
         payload = {'message': json.dumps(request_json).encode('UTF-8')}
-        # files = [('file', open(input_file, 'rb'))]
-        files = [('file', input_estimateimage)]
+        files = [('file', open(input_file, 'rb'))]
+        # files = [('file', input_estimateimage)]
         headers = {'X-OCR-SECRET': secret_key}
         response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
         res = json.loads(response.text.encode('utf8'))
@@ -142,13 +142,62 @@ class Process():
     def df(self):
         # final_construction_dict, final_detail_dict, final_df = self.gennerate()
         return final_df.to_html()
+
     def construction(self):
-        list_1 = []
-        # final_construction_dict, final_detail_dict, final_df = self.gennerate()
-        for key in final_construction_dict.keys():
+        construction_evaluation_dict = {}
+        construction_evaluation = []
+        construction_evaluation.append(f'* 평당 공사비는 {final_df.iloc[:,1].max() / self.area:,.0f}원입니다.\n')
+        for key, value in final_construction_dict.items():
             if key in evaluation_list:
-                list_1.append(f'평가가능 항목인 {key}있음')
-        return list_1
+                construction_evaluation_dict[key] = value
+        for key, value in construction_evaluation_dict.items():
+            if key == "화장실공사":
+                if len(del_list) == 1 and del_list[0] == '타일공사':
+                    pass
+                else:
+                    construction_evaluation.append(f'* 평가가능 항목인 {key}{del_list}가 존재합니다')
+                    if '타일공사' in del_list:
+                        toilet_cost = (final_construction_dict[key] - 600000) / max(1, del_list.count('수전공사'))
+                    else:
+                        toilet_cost = final_construction_dict[key]
+                    construction_evaluation.append(f'화장실공사의 비용은 {toilet_cost:,.0f}원입니다.')
+                    if 2200000 <= toilet_cost <= 3200000:
+                        construction_evaluation.append("화장실공사가 적절한 비용으로 판단됩니다.")
+                    elif toilet_cost < 2200000:
+                        construction_evaluation.append("화장실공사가 다소 저렴한 편입니다. 세부사항을 확인해보세요")
+                    elif 3200000 < toilet_cost:
+                        construction_evaluation.append("화장실공사가 다소 비싼 편입니다. 세부사항을 확인해보세요")
+                    construction_evaluation.append("\n")
+            if key == "바닥공사":
+                construction_evaluation.append(f'* 평가가능 항목인 {key}가 존재합니다')
+                cost_per_area = final_construction_dict[key] / self.area
+                construction_evaluation.append(f'바닥공사의 평단가는 {cost_per_area:,.0f}원입니다.')
+                if 35000 <= cost_per_area <= 50000:
+                    construction_evaluation.append("바닥공사가 장판이라면 적절한 비용으로 판단됩니다. 세부사항이 장판인지 확인해보세요")
+                elif 100000 <= cost_per_area <= 120000:
+                    construction_evaluation.append("바닥공사가 마루라면 적절한 비용으로 판단됩니다. 세부사항이 마루인지 확인해보세요")
+                elif 50000 < cost_per_area < 100000:
+                    construction_evaluation.append("세부사항이 장판인지 마루인지 확인해보세요. 장판이라면 다소 비용이 높은 편이고, 마루라면 저렴한 편입니다.")
+                elif cost_per_area < 50000:
+                    construction_evaluation.append("바닥공사가 다소 저렴한 편입니다. 세부사항을 확인해보세요")
+                elif 120000 < cost_per_area:
+                    construction_evaluation.append("바닥공사가 다소 비싼 편입니다. 세부사항을 확인해보세요")
+                construction_evaluation.append("\n")
+            if key == "도배공사":
+                construction_evaluation.append(f'* 평가가능 항목인 {key}가 존재합니다')
+                cost_per_area = final_construction_dict[key] / self.area
+                construction_evaluation.append(f'도배공사의 평단가는 {cost_per_area:,.0f}원입니다.')
+                if 40000 <= cost_per_area <= 60000:
+                    construction_evaluation.append("도배공사가 합지라면 적절한 비용으로 판단됩니다. 세부사항이 합지인지 확인해보세요")
+                elif 60000 < cost_per_area <= 85000:
+                    construction_evaluation.append("도배공사가 실크라면 적절한 비용으로 판단됩니다. 세부사항이 실크인지 확인해보세요")
+                elif cost_per_area < 40000:
+                    construction_evaluation.append("도배공사가 다소 저렴한 편입니다. 세부사항을 확인해보세요")
+                elif 85000 < cost_per_area:
+                    construction_evaluation.append("도배공사가 다소 비싼 편입니다. 세부사항을 확인해보세요")
+                construction_evaluation.append("\n")
+        return construction_evaluation
+
     def detail(self):
         detail_evaluation = []
         # final_construction_dict, final_detail_dict, final_df = self.gennerate()
@@ -156,24 +205,24 @@ class Process():
         for expense_corr, expense in final_detail_dict.items():
             if expense == total_expense:
                 순공사비 = expense_corr
-                detail_evaluation.append(f'{expense_corr} 존재하므로 평가 가능합니다\n')
+                detail_evaluation.append(f'* {expense_corr} 존재하므로 평가 가능합니다\n')
                 break
         try:
-            # print(순공사비)
+            print(순공사비)
             for expense_corr, expense in final_detail_dict.items():
                 if "이윤" in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'{expense_corr}는 공사비의 {i:.2f}%입니다\n')
+                    detail_evaluation.append(f'* {expense_corr}는 공사비의 {i:.2f}%입니다\n')
                 elif "산재보" in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'산재보험료는 공사비의 {i:.2f}%입니다')
+                    detail_evaluation.append(f'* 산재보험료는 공사비의 {i:.2f}%입니다')
                     if total_expense * 100 > 50000000:
                         detail_evaluation.append("(공사비용이 5천만원미만이므로 적절하지 못합니다)\n")
                     else:
                         detail_evaluation.append("\n")
                 elif "고용보" in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'고용보험료는 공사비의 {i:.2f}%입니다')
+                    detail_evaluation.append(f'* 고용보험료는 공사비의 {i:.2f}%입니다')
                     #             detail_evaluation.append(f'{expense_corr}.는 공사비의 {i:.2f}%입니다\n')
                     if total_expense * 100 > 50000000:
                         detail_evaluation.append("(공사비용이 5천만원미만이므로 적절하지 못합니다)\n")
@@ -181,14 +230,14 @@ class Process():
                         detail_evaluation.append("\n")
                 elif "산재고용" in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'산재고용보험료는 공사비의 {i:.2f}%입니다')
+                    detail_evaluation.append(f'* 산재고용보험료는 공사비의 {i:.2f}%입니다')
                     if total_expense * 100 > 50000000:
                         detail_evaluation.append("(공사비용이 5천만원미만이므로 적절하지 못합니다)\n")
                     else:
                         detail_evaluation.append("\n")
                 elif 1000 < expense < total_expense * 0.10 and "단수" not in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'그 외 추가 비용 검토해보세요: {expense_corr}는 공사비의 {i:.2f}%입니다.\n')
+                    detail_evaluation.append(f'* 그 외 추가 비용 검토해보세요: {expense_corr}는 공사비의 {i:.2f}%입니다.\n')
         except:
-            detail_evaluation.append('평가할 수 없습니다. 검토필요')
+            detail_evaluation.append('* 평가할 수 없습니다. 검토필요')
         return detail_evaluation

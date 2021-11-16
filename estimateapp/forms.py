@@ -6,7 +6,8 @@ from estimateapp.models import EstimateModel
 class ImageCreationForm(ModelForm):
     input_estimateimage = forms.FileField(widget=forms.ClearableFileInput(attrs={"style" :"display:none",
                                                                    "name":"inpFile",
-                                                                    "id":"inpFile" }))
+                                                                    "id":"inpFile",
+                                                                 'multiple':True}))
     class Meta:
         model = EstimateModel
         fields = '__all__'
