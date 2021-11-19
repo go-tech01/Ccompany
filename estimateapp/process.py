@@ -142,6 +142,7 @@ class Process():
     def df(self):
         # final_construction_dict, final_detail_dict, final_df = self.gennerate()
         return final_df.to_html()
+        # return final_df
 
     def construction(self):
         construction_evaluation_dict = {}

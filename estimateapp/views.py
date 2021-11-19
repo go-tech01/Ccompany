@@ -40,6 +40,8 @@ class CreateEstimateView(CreateView):
         input_image = str(obj.input_estimateimage)
         input_area = int(obj.area)
         processing = Process(input_image, input_area)
+        print("df:",processing.df())
+        print("construction: ",processing.construction())
         # try:
         outputs.list_11 = processing.df()
         outputs.list_22 = processing.construction()
