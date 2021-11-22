@@ -1,18 +1,17 @@
 import os
-import cv2
+from cv2 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 class TableCut():
     def __init__(self, input_estimateimage):
         image_path = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
-
-        plot_flag = True
-        save_output = True
-
-        self.image = cv2.imread(image_path)
-
-        gray_scale = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        print("TableCut :",image_path)
+        image_1 = Image.open(image_path)
+        image = np.array(image_1)
+        # print("image :",image)
+        gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         th1, img_bin = cv2.threshold(gray_scale, 150, 225, cv2.THRESH_BINARY)
 
@@ -67,18 +66,8 @@ class TableCut():
         W = result[2]
         H = result[3]
 
-        img = cv2.imread(image_path)
-        cropped_img = img[0: (Y + H), 0: (X + W)]
-
-        if plot_flag:
-            plt.plot(cropped_img)
-        #     plot(img)
-
-        self.cropped_img_1 = cv2.imwrite('cropped_img2.jpg', cropped_img)
-
-    def plot(self, cmap=None):
-        plt.figure(figsize=(15, 15))
-        plt.imshow(self.image, cmap=cmap)
-        return self.cropped_img_1
-
-
+        cropped_img = image[0: (Y + H), 0: (X + W)]
+        # cv2.imwrite('../media/cropped_img2.jpg', cropped_img)
+        im = Image.fromarray(cropped_img)
+        im = im.convert("RGB")
+        im.save('media/cropped_img_1.jpg')

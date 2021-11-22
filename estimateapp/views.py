@@ -41,11 +41,11 @@ class CreateEstimateView(CreateView):
         outputs = Output()
         input_image = str(obj.input_estimateimage)
         input_area = int(obj.area)
-        # cut_img_save = TableCut(input_image)
-        # print(cut_img_save)
-        # cut_img = cut_img_save.plot()
-        # print(cut_img)
-        processing = Process(input_image, input_area)
+        # processing = Process(input_image, input_area)
+        processing = Process(input_area)
+        cut_img_save = TableCut(input_image)
+        print(cut_img_save)
+        # processing = Process(input_image, input_area)
 
         # try:
         outputs.list_11 = processing.df()

@@ -41,10 +41,13 @@ error = 15
 toilet_constructions = ['욕실공사', '도기공사', '수전공사', '조적공사', '타일공사']
 class Process():
     # def __init__(self, input_estimateimage):
-    def __init__(self, input_estimateimage, area):
+    # def __init__(self, input_estimateimage, area):
+    def __init__(self, area):
         self.area = area
         global final_construction_dict, final_detail_dict, final_df, del_list
-        input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
+        # input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
+        input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/cropped_img_1.jpg'
+        print("Process :",input_file)
         request_json = {'images': [{'format': 'jpg',
                                     'name': 'demo'}],
                         'requestId': str(uuid.uuid4()),
@@ -52,6 +55,7 @@ class Process():
                         'timestamp': int(round(time.time() * 1000))}
         payload = {'message': json.dumps(request_json).encode('UTF-8')}
         files = [('file', open(input_file, 'rb'))]
+        # print('files :',files)
         # files = [('file', input_estimateimage)]
         headers = {'X-OCR-SECRET': secret_key}
         response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
