@@ -6,7 +6,7 @@ from PIL import Image
 
 class TableCut():
     def __init__(self, input_estimateimage):
-        image_path = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
+        image_path = 'media/' + str(input_estimateimage)
         print("TableCut :",image_path)
         image_1 = Image.open(image_path)
         image = np.array(image_1)

@@ -3,6 +3,11 @@ import uuid
 import time
 import json
 import pandas as pd
+
+from cv2 import cv2
+import numpy as np
+from PIL import Image
+
 api_url = 'https://97a0f00d78a4498d815fd055d0c9f2be.apigw.ntruss.com/custom/v1/11970/646bea3a9ab7013e4e0292974f38e3635b695b728cd1644363ffe72ed367fe51/general'
 secret_key = 'Q0JuY0dhZk1FY0pnV1JOa1BxRHpuQkVEeGJNemZGZ3Y='
 construction = {'가구공사' : ['가구공사', '가구 공사'],
@@ -41,13 +46,79 @@ error = 15
 toilet_constructions = ['욕실공사', '도기공사', '수전공사', '조적공사', '타일공사']
 class Process():
     # def __init__(self, input_estimateimage):
-    # def __init__(self, input_estimateimage, area):
-    def __init__(self, area):
+    def __init__(self, input_estimateimage, area):
+    # def __init__(self, area):
         self.area = area
         global final_construction_dict, final_detail_dict, final_df, del_list
+        image_path = 'media/' + str(input_estimateimage)
+        # print("TableCut :", image_path)
+        image_1 = Image.open(image_path)
+        image = np.array(image_1)
+        # print("image :",image)
+        gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        th1, img_bin = cv2.threshold(gray_scale, 150, 225, cv2.THRESH_BINARY)
+
+        img_bin = ~img_bin
+
+        line_min_width = 15
+
+        kernal_h = np.ones((1, line_min_width), np.uint8)
+        kernal_v = np.ones((line_min_width, 1), np.uint8)
+
+        img_bin_h = cv2.morphologyEx(img_bin, cv2.MORPH_OPEN, kernal_h)
+
+        img_bin_v = cv2.morphologyEx(img_bin, cv2.MORPH_OPEN, kernal_v)
+
+        img_bin_final = img_bin_h | img_bin_v
+
+        final_kernel = np.ones((3, 3), np.uint8)
+        img_bin_final = cv2.dilate(img_bin_final, final_kernel, iterations=1)
+
+        ret, labels, stats, centroids = cv2.connectedComponentsWithStats(~img_bin_final, connectivity=8,
+                                                                         ltype=cv2.CV_32S)
+
+        y_list = []
+        for i in range(len(stats)):
+            y_list.append(stats[i][1])
+
+        a_list = []
+        b_list = []
+        c_list = []
+        for a, b, c in list(zip(y_list, y_list[1:], y_list[2:])):
+            a_list.append(a)
+            b_list.append(b)
+            c_list.append(c)
+
+        table_error = 5
+        last_idx = []
+        for i in range(len(y_list) - 2):
+            if a_list[i] != b_list[i] != c_list[i] and abs(a_list[i] - b_list[i]) > table_error and abs(
+                    b_list[i] - c_list[i]) > table_error:
+                last_idx.append(i)
+
+        want_idx = []
+        for r in range(len(last_idx) - 1):
+            if last_idx[r + 1] - last_idx[r] < table_error * 4:
+                pass
+            else:
+                want_idx.append(last_idx[r + 1])
+        result = stats[want_idx[0]]
+
+        X = result[0]
+        Y = result[1]
+        W = result[2]
+        H = result[3]
+
+        cropped_img = image[0: (Y + H), 0: (X + W)]
+        # cv2.imwrite('../media/cropped_img2.jpg', cropped_img)
+        im = Image.fromarray(cropped_img)
+        im = im.convert("RGB")
+        im.save('media/cropped_img_1.jpg')
+
         # input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
-        input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/cropped_img_1.jpg'
-        print("Process :",input_file)
+        input_file = 'media/cropped_img_1.jpg'
+        # print("Process :",input_file)
         request_json = {'images': [{'format': 'jpg',
                                     'name': 'demo'}],
                         'requestId': str(uuid.uuid4()),
@@ -93,6 +164,7 @@ class Process():
         for text, y_vertice in text_to_y_dict.items():
             if y_vertice > last_y_vertice + error:
                 text = text[:-4].replace(',', '')
+                text = text.replace('.', '')
                 try:
                     int(text)
                     if int(text) not in code and 1000 < int(text):
@@ -106,6 +178,7 @@ class Process():
                 for text, y_vertice in text_to_y_dict.items():
                     if y_vertice >= y_coordinate - error and y_vertice <= y_coordinate + error:
                         text = text[:-4].replace(',', '')
+                        text = text.replace('.', '')
                         try:
                             int(text)
                             if int(text) not in code:
@@ -142,6 +215,10 @@ class Process():
         final_dict = dict(final_construction_dict, **final_detail_dict)
         # DataFrame화
         final_df = pd.DataFrame(final_dict.items())
+        print("final_construction_dict :", final_construction_dict)
+        print("final_detail_dict :",final_detail_dict)
+        print("final_dict :",final_dict)
+        print("del_list :",del_list)
 
     def df(self):
         # final_construction_dict, final_detail_dict, final_df = self.gennerate()
