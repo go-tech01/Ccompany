@@ -5,15 +5,14 @@ import matplotlib.pyplot as plt
 
 class TableCut():
     def __init__(self, input_estimateimage):
-        input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
+        image_path = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
 
-        image_path = 'image2.png'
         plot_flag = True
         save_output = True
 
-        image = cv2.imread(image_path)
+        self.image = cv2.imread(image_path)
 
-        gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray_scale = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         th1, img_bin = cv2.threshold(gray_scale, 150, 225, cv2.THRESH_BINARY)
 
@@ -72,14 +71,14 @@ class TableCut():
         cropped_img = img[0: (Y + H), 0: (X + W)]
 
         if plot_flag:
-            plot(cropped_img)
+            plt.plot(cropped_img)
         #     plot(img)
 
-        cropped_img_1 = cv2.imwrite('cropped_img2.jpg', cropped_img)
+        self.cropped_img_1 = cv2.imwrite('cropped_img2.jpg', cropped_img)
 
-
-    def plot(image, cmap=None):
+    def plot(self, cmap=None):
         plt.figure(figsize=(15, 15))
-        plt.imshow(image, cmap=cmap)
+        plt.imshow(self.image, cmap=cmap)
+        return self.cropped_img_1
 
 
