@@ -45,9 +45,7 @@ error = 15
 # 공사 대분류 - 소분류
 toilet_constructions = ['욕실공사', '도기공사', '수전공사', '조적공사', '타일공사']
 class Process():
-    # def __init__(self, input_estimateimage):
     def __init__(self, input_estimateimage, area):
-    # def __init__(self, area):
         self.area = area
         global final_construction_dict, final_detail_dict, final_df, del_list
         image_path = 'media/' + str(input_estimateimage)
@@ -114,9 +112,7 @@ class Process():
         im = im.convert("RGB")
         im.save('media/cropped_img_1.jpg')
 
-        # input_file = 'C:/Users/Kimyounghak/PycharmProjects/Ccompany/media/' + str(input_estimateimage)
         input_file = 'media/cropped_img_1.jpg'
-        # print("Process :",input_file)
         request_json = {'images': [{'format': 'jpg',
                                     'name': 'demo'}],
                         'requestId': str(uuid.uuid4()),
@@ -124,14 +120,11 @@ class Process():
                         'timestamp': int(round(time.time() * 1000))}
         payload = {'message': json.dumps(request_json).encode('UTF-8')}
         files = [('file', open(input_file, 'rb'))]
-        # print('files :',files)
-        # files = [('file', input_estimateimage)]
         headers = {'X-OCR-SECRET': secret_key}
         response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
         res = json.loads(response.text.encode('utf8'))
         # 전처리
         res_images = res['images']
-        # print(res_images)
         res_fields = res_images[0]['fields']
         inferText = []                                            # self.inferText 라고 해주어야 하나 ???
         y_vertices = []
@@ -213,15 +206,9 @@ class Process():
         final_dict = dict(final_construction_dict, **final_detail_dict)
         # DataFrame화
         final_df = pd.DataFrame(final_dict.items())
-        print("final_construction_dict :", final_construction_dict)
-        print("final_detail_dict :",final_detail_dict)
-        print("final_dict :",final_dict)
-        print("del_list :",del_list)
 
     def df(self):
-        # final_construction_dict, final_detail_dict, final_df = self.gennerate()
         return final_df.to_html()
-        # return final_df
 
     def construction(self):
         construction_evaluation_dict = {}

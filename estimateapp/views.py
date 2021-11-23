@@ -42,10 +42,6 @@ class CreateEstimateView(CreateView):
         input_image = str(obj.input_estimateimage)
         input_area = int(obj.area)
         processing = Process(input_image, input_area)
-        # cut_img_save = TableCut(input_image)
-        # processing = Process(input_area)
-        # print(cut_img_save)
-        # processing = Process(input_image, input_area)
         outputs.list_11 = processing.df()
         outputs.list_22 = processing.construction()
         outputs.list_33 = processing.detail()
@@ -53,7 +49,6 @@ class CreateEstimateView(CreateView):
         return reverse('estimateapp:detail', kwargs={'pk': self.object.pk})
 
 class OutputImageView(DetailView):
-   # model = EstimateModel
    model = Output
    context_object_name = 'target_image'
    template_name = 'estimateapp/detail.html'
