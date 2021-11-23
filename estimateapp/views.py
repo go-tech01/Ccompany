@@ -46,15 +46,10 @@ class CreateEstimateView(CreateView):
         # processing = Process(input_area)
         # print(cut_img_save)
         # processing = Process(input_image, input_area)
-
-        # try:
         outputs.list_11 = processing.df()
         outputs.list_22 = processing.construction()
         outputs.list_33 = processing.detail()
         outputs.save()
-        # except:
-        #     obj.delete()
-        # self.gitrequestfiles(self, request)
         return reverse('estimateapp:detail', kwargs={'pk': self.object.pk})
 
 class OutputImageView(DetailView):

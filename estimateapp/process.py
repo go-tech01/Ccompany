@@ -51,10 +51,8 @@ class Process():
         self.area = area
         global final_construction_dict, final_detail_dict, final_df, del_list
         image_path = 'media/' + str(input_estimateimage)
-        # print("TableCut :", image_path)
         image_1 = Image.open(image_path)
         image = np.array(image_1)
-        # print("image :",image)
         gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         th1, img_bin = cv2.threshold(gray_scale, 150, 225, cv2.THRESH_BINARY)
