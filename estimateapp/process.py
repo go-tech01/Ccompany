@@ -199,7 +199,8 @@ class Process():
             for text, y_vertice in text_to_y_dict.items():
                 if y_vertice >= expense_y_vertice - error and y_vertice <= expense_y_vertice + error:
                     if text[:-4].replace(',', '') != str(expense) and text[:-4] != '원':
-                        expense_corr_list.append(text[:-4])
+                        text = text[:-4].replace(' ','')
+                        expense_corr_list.append(text)
             expense_corr = ''.join(expense_corr_list)
             final_detail_dict[expense_corr] = expense  # {'공사비' : 16000000}
         # 두 딕셔너리 합쳐서 final_dict 만들기
@@ -270,7 +271,7 @@ class Process():
         # final_construction_dict, final_detail_dict, final_df = self.gennerate()
         total_expense = sum(final_construction_dict.values())
         for expense_corr, expense in final_detail_dict.items():
-            if expense == total_expense:
+            if round(expense,-1) == round(total_expense,-1):
                 순공사비 = expense_corr
                 detail_evaluation.append(f'* {expense_corr} 존재하므로 평가 가능합니다\n')
                 break
@@ -287,17 +288,17 @@ class Process():
                         detail_evaluation.append("(공사비용이 5천만원미만이므로 적절하지 못합니다)\n")
                     else:
                         detail_evaluation.append("\n")
-                elif "고용보" in expense_corr:
+                elif "산재고용" in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'* 고용보험료는 공사비의 {i:.2f}%입니다')
-                    #             detail_evaluation.append(f'{expense_corr}.는 공사비의 {i:.2f}%입니다\n')
+                    detail_evaluation.append(f'* 산재고용보험료는 공사비의 {i:.2f}%입니다')
                     if total_expense * 100 > 50000000:
                         detail_evaluation.append("(공사비용이 5천만원미만이므로 적절하지 못합니다)\n")
                     else:
                         detail_evaluation.append("\n")
-                elif "산재고용" in expense_corr:
+                elif "고용보" in expense_corr:
                     i = expense / total_expense * 100
-                    detail_evaluation.append(f'* 산재고용보험료는 공사비의 {i:.2f}%입니다')
+                    detail_evaluation.append(f'* 고용보험료는 공사비의 {i:.2f}%입니다')
+                    #             detail_evaluation.append(f'{expense_corr}.는 공사비의 {i:.2f}%입니다\n')
                     if total_expense * 100 > 50000000:
                         detail_evaluation.append("(공사비용이 5천만원미만이므로 적절하지 못합니다)\n")
                     else:
