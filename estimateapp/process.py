@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 
 api_url = 'https://97a0f00d78a4498d815fd055d0c9f2be.apigw.ntruss.com/custom/v1/11970/646bea3a9ab7013e4e0292974f38e3635b695b728cd1644363ffe72ed367fe51/general'
-secret_key = 'Q0JuY0dhZk1FY0pnV1JOa1BxRHpuQkVEeGJNemZGZ3Y='
+secret_key_1 = 'Q0JuY0dhZk1FY0pnV1JOa1BxRHpuQkVEeGJNemZGZ3Y='
 construction = {'가구공사' : ['가구공사', '가구 공사'],
                 '도배공사' : ['도배공사', '도배 공사'],
                 '도어공사' : ['도어공사', '도어 공사'],
@@ -120,7 +120,7 @@ class Process():
                         'timestamp': int(round(time.time() * 1000))}
         payload = {'message': json.dumps(request_json).encode('UTF-8')}
         files = [('file', open(input_file, 'rb'))]
-        headers = {'X-OCR-SECRET': secret_key}
+        headers = {'X-OCR-SECRET': secret_key_1}
         response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
         res = json.loads(response.text.encode('utf8'))
         # 전처리
