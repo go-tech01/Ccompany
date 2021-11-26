@@ -13,7 +13,8 @@ SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]      #"*" 모두 허용한다
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
