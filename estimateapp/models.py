@@ -15,6 +15,6 @@ class EstimateModel(models.Model):
     input_estimateimage = models.ImageField(upload_to='input_estimate', null=False)
 
 class Output(models.Model):
-    list_11 = models.CharField(max_length=500)
-    list_22 = JSONField()
-    list_33 = JSONField()
+    df = models.CharField(max_length=500)
+    construction = JSONField()
+    detail = JSONField()

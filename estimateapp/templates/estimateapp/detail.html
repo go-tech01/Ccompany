@@ -12,12 +12,12 @@
             <div style="display: inline-block; vertical-align: top;
              border-right: 1px solid black; padding-right: 1rem; text-align: center">
 {#                Data {{ target_image.df|safe }}</div>#}
-                Data {{ target_image.list_11|safe }}</div>
+                Data {{ target_image.df|safe }}</div>
             <div style="display: inline-block; vertical-align: top;
              padding-top: 1rem; padding-left: 0.5rem;">
                 <div class="aaa">
 {#                {% for evaluation_1 in  target_image.construction %}#}
-                {% for evaluation_1 in  target_image.list_22 %}
+                {% for evaluation_1 in  target_image.construction %}
                     <p>{{ evaluation_1 }}</p>
                 {% endfor %}
                 </div>
@@ -25,7 +25,7 @@
                 <p></p>
                 <div class="aaa">
 {#                {% for evaluation_2 in  target_image.detail %}#}
-                {% for evaluation_2 in  target_image.list_33  %}
+                {% for evaluation_2 in  target_image.detail  %}
                     <p>{{ evaluation_2 }}</p>
                 {% endfor %}
             </div>

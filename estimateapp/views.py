@@ -42,9 +42,9 @@ class CreateEstimateView(CreateView):
         input_image = str(obj.input_estimateimage)
         input_area = int(obj.area)
         processing = Process(input_image, input_area)
-        outputs.list_11 = processing.df()
-        outputs.list_22 = processing.construction()
-        outputs.list_33 = processing.detail()
+        outputs.df = processing.df()
+        outputs.construction = processing.construction()
+        outputs.detail = processing.detail()
         outputs.save()
         return reverse('estimateapp:detail', kwargs={'pk': self.object.pk})
 
