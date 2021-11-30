@@ -1,3 +1,5 @@
+import os
+
 import requests
 import uuid
 import time
@@ -8,8 +10,29 @@ from cv2 import cv2
 import numpy as np
 from PIL import Image
 
+from Ccompany.settings import BASE_DIR
+
 api_url = 'https://97a0f00d78a4498d815fd055d0c9f2be.apigw.ntruss.com/custom/v1/11970/646bea3a9ab7013e4e0292974f38e3635b695b728cd1644363ffe72ed367fe51/general'
 secret_key_1 = 'Q0JuY0dhZk1FY0pnV1JOa1BxRHpuQkVEeGJNemZGZ3Y='
+
+
+env_list = dict()
+
+local_env = open(os.path.join(BASE_DIR, '.env'), encoding='utf-8')
+
+while True:
+    line = local_env.readline()
+    if not line:
+        break
+    line = line.replace('\n', '')
+    start = line.find('=')
+    key = line[:start]
+    value = line[start+1:]
+    env_list[key] = value
+
+secret_key_1 = env_list['secret_key_1']
+
+
 construction = {'가구공사' : ['가구공사', '가구 공사'],
                 '도배공사' : ['도배공사', '도배 공사'],
                 '도어공사' : ['도어공사', '도어 공사'],
